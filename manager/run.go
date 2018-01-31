@@ -49,6 +49,9 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 	completions := int32(1)
 
 	jobTemplate := api.PodTemplateSpec{
+		ObjectMeta: metav1.ObjectMeta{
+			Labels: map[string]string{"type": "importer"},
+		},
 		Spec: api.PodSpec{
 			RestartPolicy:    api.RestartPolicyOnFailure,
 			ImagePullSecrets: imagePullSecrets,
@@ -72,6 +75,7 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      response.Name,
 			Namespace: metav1.NamespaceDefault,
+			Labels:    map[string]string{"type": "importer"},
 		},
 		Spec: batchv1.JobSpec{
 			Template:     jobTemplate,

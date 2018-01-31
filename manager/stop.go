@@ -16,7 +16,11 @@ func Stop(w http.ResponseWriter, r *http.Request, p httprouter.Params, response 
 		return
 	}
 
-	err := clientset.BatchV1().Jobs(metav1.NamespaceDefault).Delete(response.Id, &metav1.DeleteOptions{})
+	propagationPolicy := metav1.DeletePropagationBackground
+
+	err := clientset.BatchV1().Jobs(metav1.NamespaceDefault).Delete(response.Id, &metav1.DeleteOptions{
+		PropagationPolicy: &propagationPolicy,
+	})
 
 	if err != nil {
 		w.WriteHeader(400)
