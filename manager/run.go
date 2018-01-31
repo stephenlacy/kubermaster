@@ -45,7 +45,6 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 	imagePullSecrets = append(imagePullSecrets, api.LocalObjectReference{Name: "regsecret"})
 
 	backOffLimit := int32(1)
-	activeDeadlineSeconds := int64(2)
 
 	jobTemplate := api.PodTemplateSpec{
 		Spec: api.PodSpec{
@@ -73,9 +72,8 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 			Namespace: metav1.NamespaceDefault,
 		},
 		Spec: batchv1.JobSpec{
-			Template:              jobTemplate,
-			BackoffLimit:          &backOffLimit,
-			ActiveDeadlineSeconds: &activeDeadlineSeconds,
+			Template:     jobTemplate,
+			BackoffLimit: &backOffLimit,
 		},
 	}
 	job, err := clientset.BatchV1().Jobs(metav1.NamespaceDefault).Create(jobopts)
