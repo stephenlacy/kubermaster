@@ -9,7 +9,6 @@ import (
 	// "k8s.io/client-go/rest"
 	"fmt"
 	"github.com/satori/go.uuid"
-	batchv1 "k8s.io/api/batch/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -44,17 +43,13 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 	imagePullSecrets := []api.LocalObjectReference{}
 	imagePullSecrets = append(imagePullSecrets, api.LocalObjectReference{Name: "regsecret"})
 
-	backOffLimit := int32(1)
-	parallelisim := int32(1)
-	completions := int32(1)
-	// activeDeadlineSeconds := int64(10)
-
-	jobTemplate := api.PodTemplateSpec{
+	podSpec := api.Pod{
 		ObjectMeta: metav1.ObjectMeta{
+			Name:   response.Name,
 			Labels: map[string]string{"type": "importer"},
 		},
 		Spec: api.PodSpec{
-			RestartPolicy:    api.RestartPolicyOnFailure,
+			RestartPolicy:    api.RestartPolicyNever,
 			ImagePullSecrets: imagePullSecrets,
 			Containers: []api.Container{
 				{
@@ -72,21 +67,9 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 			},
 		},
 	}
-	jobopts := &batchv1.Job{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      response.Name,
-			Namespace: metav1.NamespaceDefault,
-			Labels:    map[string]string{"type": "importer"},
-		},
-		Spec: batchv1.JobSpec{
-			Template:     jobTemplate,
-			BackoffLimit: &backOffLimit,
-			Parallelism:  &parallelisim,
-			Completions:  &completions,
-			// ActiveDeadlineSeconds: &activeDeadlineSeconds,
-		},
-	}
-	job, err := clientset.BatchV1().Jobs(metav1.NamespaceDefault).Create(jobopts)
+
+	job, err := clientset.Core().Pods(metav1.NamespaceDefault).Create(&podSpec)
+
 	if err != nil {
 		w.WriteHeader(400)
 		payload := PostErrorResponse{
