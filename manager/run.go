@@ -47,14 +47,14 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 	backOffLimit := int32(1)
 	parallelisim := int32(1)
 	completions := int32(1)
-	activeDeadlineSeconds := int64(10)
+	// activeDeadlineSeconds := int64(10)
 
 	jobTemplate := api.PodTemplateSpec{
 		ObjectMeta: metav1.ObjectMeta{
 			Labels: map[string]string{"type": "importer"},
 		},
 		Spec: api.PodSpec{
-			RestartPolicy:    api.RestartPolicyNever,
+			RestartPolicy:    api.RestartPolicyOnFailure,
 			ImagePullSecrets: imagePullSecrets,
 			Containers: []api.Container{
 				{
@@ -79,11 +79,11 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 			Labels:    map[string]string{"type": "importer"},
 		},
 		Spec: batchv1.JobSpec{
-			Template:              jobTemplate,
-			BackoffLimit:          &backOffLimit,
-			Parallelism:           &parallelisim,
-			Completions:           &completions,
-			ActiveDeadlineSeconds: &activeDeadlineSeconds,
+			Template:     jobTemplate,
+			BackoffLimit: &backOffLimit,
+			Parallelism:  &parallelisim,
+			Completions:  &completions,
+			// ActiveDeadlineSeconds: &activeDeadlineSeconds,
 		},
 	}
 	job, err := clientset.BatchV1().Jobs(metav1.NamespaceDefault).Create(jobopts)
