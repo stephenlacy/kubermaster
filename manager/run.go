@@ -53,7 +53,7 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 			Labels: map[string]string{"type": "importer"},
 		},
 		Spec: api.PodSpec{
-			RestartPolicy:    api.RestartPolicyOnFailure,
+			RestartPolicy:    api.RestartPolicyNever,
 			ImagePullSecrets: imagePullSecrets,
 			Containers: []api.Container{
 				{
