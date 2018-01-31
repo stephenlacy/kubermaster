@@ -47,6 +47,7 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 	backOffLimit := int32(1)
 	parallelisim := int32(1)
 	completions := int32(1)
+	activeDeadlineSeconds := int64(10)
 
 	jobTemplate := api.PodTemplateSpec{
 		ObjectMeta: metav1.ObjectMeta{
@@ -78,10 +79,11 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 			Labels:    map[string]string{"type": "importer"},
 		},
 		Spec: batchv1.JobSpec{
-			Template:     jobTemplate,
-			BackoffLimit: &backOffLimit,
-			Parallelism:  &parallelisim,
-			Completions:  &completions,
+			Template:              jobTemplate,
+			BackoffLimit:          &backOffLimit,
+			Parallelism:           &parallelisim,
+			Completions:           &completions,
+			ActiveDeadlineSeconds: &activeDeadlineSeconds,
 		},
 	}
 	job, err := clientset.BatchV1().Jobs(metav1.NamespaceDefault).Create(jobopts)
