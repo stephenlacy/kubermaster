@@ -14,6 +14,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+// Run a pod
 func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response PostRequest, clientset kubernetes.Clientset) {
 	if response.Command == "" {
 		payload := PostErrorResponse{Success: false, Error: "command missing or invalid"}
@@ -28,7 +29,7 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 
 	id := ""
 	if response.Name == "" {
-		uid := uuid.NewV1()
+		uid := uuid.NewV4()
 		id = uid.String()
 	}
 
@@ -55,7 +56,7 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 				{
 					Name:            response.Name,
 					Image:           response.Image,
-					ImagePullPolicy: "IfNotPresent",
+					ImagePullPolicy: "Always",
 					Command:         args[:0],
 					Args:            args,
 					Resources: api.ResourceRequirements{
