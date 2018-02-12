@@ -2,6 +2,7 @@ package manager
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 	// "k8s.io/client-go/rest"
@@ -9,6 +10,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+// Stop (delete) a job
 func Stop(w http.ResponseWriter, r *http.Request, p httprouter.Params, response PostRequest, clientset kubernetes.Clientset) {
 	if response.Id == "" {
 		payload := PostErrorResponse{Success: false, Error: "container id missing"}
@@ -21,8 +23,10 @@ func Stop(w http.ResponseWriter, r *http.Request, p httprouter.Params, response 
 	err := clientset.BatchV1().Jobs(metav1.NamespaceDefault).Delete(response.Id, &metav1.DeleteOptions{
 		PropagationPolicy: &propagationPolicy,
 	})
+	fmt.Printf("deleting job: %v", response.Id)
 
 	if err != nil {
+		fmt.Printf("Error deleting job: %v, error: %v", response.Id, err)
 		w.WriteHeader(400)
 		payload := PostErrorResponse{
 			Success: false,

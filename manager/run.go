@@ -70,8 +70,10 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 	}
 
 	job, err := clientset.Core().Pods(metav1.NamespaceDefault).Create(&podSpec)
+	fmt.Printf("Creating job: %v", job.GetName())
 
 	if err != nil {
+		fmt.Printf("Error creating job: %v, error: %v", job.GetName(), err)
 		w.WriteHeader(400)
 		payload := PostErrorResponse{
 			Success: false,
