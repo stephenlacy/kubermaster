@@ -44,6 +44,26 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 	imagePullSecrets := []api.LocalObjectReference{}
 	imagePullSecrets = append(imagePullSecrets, api.LocalObjectReference{Name: "regsecret"})
 
+	env := []api.EnvVar{}
+	env = append(env, api.EnvVar{
+		Name:  "JOB_ID",
+		Value: response.JobID,
+	})
+
+	lifecycle := &api.Lifecycle{}
+
+	if response.PreStop != "" {
+		preStop := strings.Split(response.PreStop, " ")
+
+		lifecycle = &api.Lifecycle{
+			PreStop: &api.Handler{
+				Exec: &api.ExecAction{
+					Command: preStop,
+				},
+			},
+		}
+	}
+
 	podSpec := api.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   response.Name,
@@ -58,7 +78,9 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 					Image:           response.Image,
 					ImagePullPolicy: "Always",
 					Command:         args[:0],
+					Env:             env,
 					Args:            args,
+					Lifecycle:       lifecycle,
 					Resources: api.ResourceRequirements{
 						Limits: api.ResourceList{
 							api.ResourceName(api.ResourceMemory): resource.MustParse(response.Memory),

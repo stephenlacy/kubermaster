@@ -25,6 +25,8 @@ type PostRequest struct {
 	Name    string            `json:"name"`
 	Id      string            `json:"id"`
 	Memory  string            `json:"memory"` // 250M
+	JobID   string            `json:"jobId"`
+	PreStop string            `json:"preStop"`
 }
 
 type PostSuccessResponse struct {

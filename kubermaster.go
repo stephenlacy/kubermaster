@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Printf("Starting kubermaster \n")
+	fmt.Println("Starting kubermaster")
 
 	tokenDescription := "Authentication token for cluster" +
 		"(or ENV TOKEN=<token>)"
