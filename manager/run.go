@@ -35,7 +35,7 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 		id = uid.String()
 	}
 
-	response.Name = fmt.Sprintf("job-%v-%v-%v", response.Name, id, api.NamespaceDefault)
+	response.Name = fmt.Sprintf("task-%v-%v-%v", response.Name, id, api.NamespaceDefault)
 
 	if response.Memory == "" {
 		response.Memory = DEFAULT_MEMORY
@@ -93,12 +93,12 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 		},
 	}
 
-	job, err := clientset.Core().Pods(metav1.NamespaceDefault).Create(&podSpec)
+	task, err := clientset.Core().Pods(metav1.NamespaceDefault).Create(&podSpec)
 
-	name := job.GetName()
+	name := task.GetName()
 
 	if err != nil {
-		fmt.Printf("Error creating job: %v, error: %v", job.GetName(), err)
+		fmt.Printf("Error creating task: %v, error: %v", task.GetName(), err)
 		w.WriteHeader(400)
 		payload := PostErrorResponse{
 			Success: false,
