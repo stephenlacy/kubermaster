@@ -104,5 +104,23 @@ func Init(token string, memory string) http.Handler {
 		Stop(w, r, p, response, *clientset)
 	})
 
+	router.GET("/status", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		response, err := HandleGetAuth(w, r)
+		if err != nil {
+			fmt.Fprint(w, err)
+			return
+		}
+		Status(w, r, p, response, *clientset)
+	})
+
+	// router.GET("/status/:id", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	// 	response, err := HandleGetAuth(w, r)
+	// 	if err != nil {
+	// 		fmt.Fprint(w, err)
+	// 		return
+	// 	}
+	// 	Status(w, r, p, response, *clientset)
+	// })
+
 	return router
 }

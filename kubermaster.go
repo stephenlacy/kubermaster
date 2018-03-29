@@ -8,8 +8,10 @@ import (
 	"os"
 )
 
+var version = "undefined"
+
 func main() {
-	fmt.Println("Starting kubermaster")
+	fmt.Printf("Starting kubermaster, version: %v \n", version)
 
 	tokenDescription := "Authentication token for cluster" +
 		"(or ENV TOKEN=<token>)"

@@ -1,0 +1,48 @@
+# kubermaster service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${APP_NAME}
+spec:
+  type: NodePort
+  selector:
+    app: ${APP_NAME}
+  ports:
+  - protocol: TCP
+    port: 9090
+    targetPort: 9090
+
+---
+
+# kubermaster deployment
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ${APP_NAME}-deployment
+  labels:
+    app: ${APP_NAME}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${APP_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${APP_NAME}
+    spec:
+      containers:
+      - name: ${APP_NAME}
+        image: ${DOCKER_IMAGE}
+        env:
+        - name: TOKEN
+          value: ${TOKEN}
+        - name: BUILD_TAG
+          value: ${BUILD_TAG}
+        ports:
+        - containerPort: 9090
+        imagePullPolicy: Never
+      # imagePullSecrets:
+      # - name: regsecret
