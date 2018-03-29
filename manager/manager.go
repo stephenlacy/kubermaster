@@ -86,6 +86,7 @@ func Init(token string, memory string) http.Handler {
 		response, err := HandlePostAuth(w, r)
 		r.Close = true
 		r.Header.Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json")
 		if err != nil {
 			fmt.Fprint(w, err)
 			return
@@ -97,6 +98,7 @@ func Init(token string, memory string) http.Handler {
 		response, err := HandlePostAuth(w, r)
 		r.Close = true
 		r.Header.Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json")
 		if err != nil {
 			fmt.Fprint(w, err)
 			return
@@ -105,6 +107,8 @@ func Init(token string, memory string) http.Handler {
 	})
 
 	router.GET("/status", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		r.Header.Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json")
 		response, err := HandleGetAuth(w, r)
 		if err != nil {
 			fmt.Fprint(w, err)
