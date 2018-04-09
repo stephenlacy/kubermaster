@@ -12,7 +12,7 @@ import (
 // Status returns the status of all current importers in the cluster
 func Status(w http.ResponseWriter, r *http.Request, p httprouter.Params, response PostRequest, clientset kubernetes.Clientset) {
 	podList := metav1.ListOptions{
-	// LabelSelector: "importer",
+		LabelSelector: "type=importer",
 	}
 
 	results := []PostSuccessResponse{}
