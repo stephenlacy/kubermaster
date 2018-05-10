@@ -106,6 +106,18 @@ func Init(token string, memory string) http.Handler {
 		Stop(w, r, p, response, *clientset)
 	})
 
+	router.POST("/purge", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		response, err := HandlePostAuth(w, r)
+		r.Close = true
+		r.Header.Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json")
+		if err != nil {
+			fmt.Fprint(w, err)
+			return
+		}
+		Purge(w, r, p, response, *clientset)
+	})
+
 	router.GET("/status", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		r.Header.Set("Content-Type", "application/json")
 		w.Header().Set("Content-Type", "application/json")
