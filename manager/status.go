@@ -36,7 +36,6 @@ func Status(w http.ResponseWriter, r *http.Request, p httprouter.Params, respons
 			Success: success,
 		}
 		results = append(results, formatted)
-		fmt.Printf("wat: %v", results)
 	}
 	_ = json.NewEncoder(w).Encode(results)
 	return
