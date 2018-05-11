@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
+	"time"
 	// "k8s.io/client-go/rest"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -12,6 +13,7 @@ import (
 
 // Stop (delete) a task
 func Stop(w http.ResponseWriter, r *http.Request, p httprouter.Params, response PostRequest, clientset kubernetes.Clientset) {
+	start := time.Now()
 	if response.Id == "" {
 		payload := PostErrorResponse{Success: false, Error: "container id missing"}
 		_ = json.NewEncoder(w).Encode(payload)
@@ -24,7 +26,8 @@ func Stop(w http.ResponseWriter, r *http.Request, p httprouter.Params, response 
 		PropagationPolicy: &propagationPolicy,
 	})
 
-	fmt.Printf("deleting task: %v", response.Id)
+	elapsed := time.Since(start)
+	fmt.Printf("deleting task: %v, time: %s\n", response.Id, elapsed)
 
 	if err != nil {
 		fmt.Printf("Error deleting task: %v, error: %v", response.Id, err)

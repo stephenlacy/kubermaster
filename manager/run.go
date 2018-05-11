@@ -114,6 +114,6 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 	_ = json.NewEncoder(w).Encode(payload)
 
 	elapsed := time.Since(start)
-	fmt.Printf("Job: %v, time: %s\n", name, elapsed)
+	fmt.Printf("starting task: %v, time: %s\n", name, elapsed)
 	return
 }
