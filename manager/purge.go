@@ -16,10 +16,16 @@ func Purge(w http.ResponseWriter, r *http.Request, p httprouter.Params, response
 	deleteOptions := &metav1.DeleteOptions{
 		PropagationPolicy: &propagationPolicy,
 	}
-	listOptions := metav1.ListOptions{
+	runningListOptions := metav1.ListOptions{
+		FieldSelector: "status.phase==Running",
+	}
+	finalListOptions := metav1.ListOptions{
 		LabelSelector: "type=importer",
 	}
-	err := clientset.Core().Pods(metav1.NamespaceDefault).DeleteCollection(deleteOptions, listOptions)
+	// Delete just the running importers first
+	err := clientset.Core().Pods(metav1.NamespaceDefault).DeleteCollection(deleteOptions, runningListOptions)
+	// Delete all remaining importers
+	err = clientset.Core().Pods(metav1.NamespaceDefault).DeleteCollection(deleteOptions, finalListOptions)
 
 	fmt.Printf("purging tasks")
 
