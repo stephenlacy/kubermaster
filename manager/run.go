@@ -69,7 +69,7 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 	podSpec := api.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   response.Name,
-			Labels: map[string]string{"type": "importer"},
+			Labels: map[string]string{"type": "importer", "task": response.Name},
 		},
 		Spec: api.PodSpec{
 			RestartPolicy:    api.RestartPolicyNever,
@@ -91,6 +91,16 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 				},
 			},
 		},
+	}
+
+	listOptions := metav1.ListOptions{
+		LabelSelector: fmt.Sprintf("task=%s", response.Name),
+		FieldSelector: "status.phase!=Running",
+	}
+
+	tasks, err := clientset.Core().Pods(metav1.NamespaceDefault).List(listOptions)
+	for _, task := range tasks.Items {
+		_ = clientset.Core().Pods(metav1.NamespaceDefault).Delete(task.Name, &metav1.DeleteOptions{})
 	}
 
 	task, err := clientset.Core().Pods(metav1.NamespaceDefault).Create(&podSpec)
