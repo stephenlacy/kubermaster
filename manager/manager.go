@@ -75,12 +75,15 @@ func Init(token string, memory string) http.Handler {
 	if err != nil {
 		panic(err.Error())
 	}
+	listOptions := metav1.ListOptions{
+		LabelSelector: "type=importer",
+	}
 
-	jobs, err := clientset.BatchV1().Jobs("").List(metav1.ListOptions{})
+	tasks, err := clientset.Core().Pods(metav1.NamespaceDefault).List(listOptions)
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Printf("There are %d jobs in the cluster\n", len(jobs.Items))
+	fmt.Printf("There are %d tasks in the cluster\n", len(tasks.Items))
 
 	router.POST("/run", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		response, err := HandlePostAuth(w, r)
