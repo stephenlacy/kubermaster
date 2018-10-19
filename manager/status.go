@@ -21,6 +21,7 @@ func Status(w http.ResponseWriter, r *http.Request, p httprouter.Params, respons
 	if err != nil {
 		panic(err)
 	}
+
 	for _, task := range tasks.Items {
 		success := false
 		phase := fmt.Sprintf("%v", task.Status.Phase)
@@ -35,7 +36,15 @@ func Status(w http.ResponseWriter, r *http.Request, p httprouter.Params, respons
 			Status:  phase,
 			Success: success,
 		}
-		results = append(results, formatted)
+		exists := false
+		for _, existing := range results {
+			if existing.Id == formatted.Id {
+				exists = true
+			}
+		}
+		if !exists {
+			results = append(results, formatted)
+		}
 	}
 	_ = json.NewEncoder(w).Encode(results)
 	return
