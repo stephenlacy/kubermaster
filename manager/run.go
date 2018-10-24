@@ -95,7 +95,7 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 
 	listOptions := metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("task=%s", response.Name),
-		FieldSelector: "status.phase!=Running",
+		// FieldSelector: "status.phase!=Running",
 	}
 
 	tasks, err := clientset.Core().Pods(metav1.NamespaceDefault).List(listOptions)
