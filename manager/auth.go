@@ -17,7 +17,7 @@ func HandlePostAuth(w http.ResponseWriter, r *http.Request) (PostRequest, error)
 		_ = json.NewEncoder(w).Encode(payload)
 		return PostRequest{}, err
 	}
-	if response.Token != root_token {
+	if response.Token != RootToken {
 		err := errors.New("Unauthorized")
 		w.WriteHeader(401)
 		payload := PostErrorResponse{Success: false, Error: err.Error(), Code: 401}
@@ -29,7 +29,7 @@ func HandlePostAuth(w http.ResponseWriter, r *http.Request) (PostRequest, error)
 
 func HandleGetAuth(w http.ResponseWriter, r *http.Request) (PostRequest, error) {
 	token := r.URL.Query().Get("token")
-	if token != root_token {
+	if token != RootToken {
 		w.WriteHeader(401)
 		return PostRequest{}, errors.New("Unauthorized")
 	}

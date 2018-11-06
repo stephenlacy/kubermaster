@@ -24,22 +24,23 @@ func Purge(w http.ResponseWriter, r *http.Request, p httprouter.Params, response
 	// 	LabelSelector: "type=importer",
 	// }
 	// Delete just the running importers first
-	err := clientset.Core().Pods(metav1.NamespaceDefault).DeleteCollection(deleteOptions, runningListOptions)
-
-	if err != nil {
-		fmt.Printf("Error purging tasks, error: %v", err)
-		w.WriteHeader(400)
-		payload := &PostErrorResponse{
-			Success: false,
-			Error:   err.Error(),
-			Code:    400,
+	defer func() {
+		err := clientset.Core().Pods(metav1.NamespaceDefault).DeleteCollection(deleteOptions, runningListOptions)
+		if err != nil {
+			fmt.Printf("Error purging tasks, error: %v", err)
+			w.WriteHeader(400)
+			payload := &PostErrorResponse{
+				Success: false,
+				Error:   err.Error(),
+				Code:    400,
+			}
+			_ = json.NewEncoder(w).Encode(payload)
+			return
 		}
+		w.WriteHeader(200)
+		payload := &PostSuccessResponse{Success: true}
 		_ = json.NewEncoder(w).Encode(payload)
 		return
-	}
+	}()
 
-	w.WriteHeader(200)
-	payload := &PostSuccessResponse{Success: true}
-	_ = json.NewEncoder(w).Encode(payload)
-	return
 }

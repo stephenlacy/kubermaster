@@ -6,6 +6,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	// _ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	"k8s.io/client-go/rest"
 	// "k8s.io/client-go/tools/clientcmd"
 	"net/http"
@@ -13,9 +14,13 @@ import (
 	// "path/filepath"
 )
 
-var root_token string = ""
-var DEFAULT_MEMORY string = "250M"
+// DefaultMemory is the maximum memory assigned to a Pod
+var DefaultMemory = "250M"
 
+// RootToken is the token used for the cluster's authentication
+var RootToken string
+
+// PostRequest is the request sent to the manager
 type PostRequest struct {
 	Token   string            `json:"token"`
 	Command string            `json:"command"`
@@ -29,12 +34,14 @@ type PostRequest struct {
 	PreStop string            `json:"preStop"`
 }
 
+// PostSuccessResponse is the JSON success response payload
 type PostSuccessResponse struct {
 	Success bool   `json:"success"`
 	Id      string `json:"id"`
 	Status  string `json:"status"`
 }
 
+// PostErrorResponse is the JSON error response payload
 type PostErrorResponse struct {
 	Success bool   `json:"success"`
 	Code    int    `json:"code"`
@@ -43,12 +50,13 @@ type PostErrorResponse struct {
 	Id      string `json:"id"`
 }
 
+// Init starts the manager
 func Init(token string, memory string) http.Handler {
 	router := httprouter.New()
-	root_token = token
+	RootToken = token
 
 	if memory != "" {
-		DEFAULT_MEMORY = memory
+		DefaultMemory = memory
 	}
 
 	// inside the cluster:

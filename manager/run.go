@@ -38,7 +38,7 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 	response.Name = fmt.Sprintf("task-%v-%v-%v", response.Name, id, api.NamespaceDefault)
 
 	if response.Memory == "" {
-		response.Memory = DEFAULT_MEMORY
+		response.Memory = DefaultMemory
 	}
 
 	args := strings.Split(response.Command, " ")
