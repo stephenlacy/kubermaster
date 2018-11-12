@@ -46,6 +46,7 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 	imagePullSecrets := []api.LocalObjectReference{}
 	imagePullSecrets = append(imagePullSecrets, api.LocalObjectReference{Name: "regsecret"})
 
+	// Add the JOB_ID to the ENV for inspection
 	env := []api.EnvVar{}
 	env = append(env, api.EnvVar{
 		Name:  "JOB_ID",
