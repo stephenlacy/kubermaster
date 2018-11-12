@@ -1,6 +1,6 @@
 FROM golang:1.11-alpine as build_image
 ADD . /go/src/app
-RUN apk add git -y
+RUN apk add git
 WORKDIR /go/src/app
 RUN go get -u github.com/golang/dep/...
 RUN dep ensure

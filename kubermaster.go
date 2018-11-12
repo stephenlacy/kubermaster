@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-var version = "undefined"
+var version = "dev"
 
 func main() {
 	fmt.Printf("Starting kubermaster, version: %v \n", version)

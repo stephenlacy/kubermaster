@@ -1,5 +1,5 @@
 VERSION=$(shell git describe --always --long)
-GOBUILD=go build -i -v -ldflags="-X main.version=${VERSION}"
+GOBUILD=go build -i -v -ldflags="-X github.com/stevelacy/kubermaster/main.version=${VERSION}"
 DOCKER_USER=stevelacy
 NAME=kubermaster
 IMAGE=$(DOCKER_USER)/$(NAME):$(VERSION)
