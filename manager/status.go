@@ -39,7 +39,7 @@ func Status(w http.ResponseWriter, r *http.Request, p httprouter.Params, respons
 		}
 		exists := false
 		for _, existing := range results {
-			if existing.ImporterId == formatted.ImporterId {
+			if existing.ImporterId == formatted.ImporterId && formatted.ImporterId != "" && existing.Status == formatted.Status {
 				exists = true
 			}
 		}
