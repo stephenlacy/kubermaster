@@ -32,13 +32,14 @@ func Status(w http.ResponseWriter, r *http.Request, p httprouter.Params, respons
 			success = true
 		}
 		formatted := PostSuccessResponse{
-			Id:      task.GetName(),
-			Status:  phase,
-			Success: success,
+			Id:         task.GetName(),
+			ImporterId: task.Labels["importerId"],
+			Status:     phase,
+			Success:    success,
 		}
 		exists := false
 		for _, existing := range results {
-			if existing.Id == formatted.Id {
+			if existing.ImporterId == formatted.ImporterId {
 				exists = true
 			}
 		}

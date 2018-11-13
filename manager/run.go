@@ -69,8 +69,12 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 
 	podSpec := api.Pod{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:   response.Name,
-			Labels: map[string]string{"type": "importer", "task": response.Name},
+			Name: response.Name,
+			Labels: map[string]string{
+				"type":       "importer",
+				"task":       response.Name,
+				"importerId": response.ImporterId,
+			},
 		},
 		Spec: api.PodSpec{
 			RestartPolicy:    api.RestartPolicyNever,

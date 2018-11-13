@@ -22,23 +22,25 @@ var RootToken string
 
 // PostRequest is the request sent to the manager
 type PostRequest struct {
-	Token   string            `json:"token"`
-	Command string            `json:"command"`
-	Image   string            `json:"image"`
-	Auth    string            `json:"auth"`
-	Labels  map[string]string `json:"labels`
-	Name    string            `json:"name"`
-	Id      string            `json:"id"`
-	Memory  string            `json:"memory"` // 250M
-	JobID   string            `json:"jobId"`
-	PreStop string            `json:"preStop"`
+	Token      string            `json:"token"`
+	Command    string            `json:"command"`
+	Image      string            `json:"image"`
+	Auth       string            `json:"auth"`
+	Labels     map[string]string `json:"labels`
+	Name       string            `json:"name"`
+	Id         string            `json:"id"`
+	Memory     string            `json:"memory"` // 250M
+	JobID      string            `json:"jobId"`
+	ImporterId string            `json:"importerId"`
+	PreStop    string            `json:"preStop"`
 }
 
 // PostSuccessResponse is the JSON success response payload
 type PostSuccessResponse struct {
-	Success bool   `json:"success"`
-	Id      string `json:"id"`
-	Status  string `json:"status"`
+	Success    bool   `json:"success"`
+	Id         string `json:"id"`
+	ImporterId string `json:"importerId"`
+	Status     string `json:"status"`
 }
 
 // PostErrorResponse is the JSON error response payload
