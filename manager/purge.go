@@ -36,6 +36,7 @@ func Purge(w http.ResponseWriter, r *http.Request, p httprouter.Params, response
 
 // PurgeDead purges dead tasks
 func PurgeDead(clientset kubernetes.Clientset) {
+	fmt.Printf("purging dead tasks")
 	propagationPolicy := metav1.DeletePropagationBackground
 
 	deleteOptions := &metav1.DeleteOptions{

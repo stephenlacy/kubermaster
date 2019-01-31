@@ -158,6 +158,7 @@ func Init(token string, memory string) http.Handler {
 }
 
 func clearUsed(clientset kubernetes.Clientset) {
+	fmt.Printf("starting clearUsed routine")
 	ticker := time.NewTicker(5 * time.Minute)
 	quit := make(chan struct{})
 	go func() {
