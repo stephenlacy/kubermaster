@@ -88,7 +88,6 @@ func Init(token string, memory string) http.Handler {
 	}
 	listOptions := metav1.ListOptions{
 		LabelSelector: "type=importer",
-		FieldSelector: "status.phase==Completed,status.phase==Error,status.phase==OOMKilled",
 	}
 
 	tasks, err := clientset.Core().Pods(metav1.NamespaceDefault).List(listOptions)
@@ -97,12 +96,13 @@ func Init(token string, memory string) http.Handler {
 	}
 	fmt.Printf("There are %d tasks in the cluster\n", len(tasks.Items))
 
-	ticker := time.NewTicker(10 * time.Second)
+	ticker := time.NewTicker(5 * time.Minute)
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				PurgeDead(*clientset)
+				PurgeSelector(*clientset, "status.phase=Failed")
+				PurgeSelector(*clientset, "status.phase=Succeeded")
 			}
 		}
 	}()

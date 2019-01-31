@@ -34,17 +34,17 @@ func Purge(w http.ResponseWriter, r *http.Request, p httprouter.Params, response
 	return
 }
 
-// PurgeDead purges dead tasks
-func PurgeDead(clientset kubernetes.Clientset) {
-	fmt.Printf("purging dead tasks\n")
-	propagationPolicy := metav1.DeletePropagationBackground
+// PurgeSelector purges tasks by selector
+func PurgeSelector(clientset kubernetes.Clientset, selector string) {
+	fmt.Printf("purging dead tasks %s\n", selector)
+	propagationPolicy := metav1.DeletePropagationForeground
 
 	deleteOptions := &metav1.DeleteOptions{
 		PropagationPolicy: &propagationPolicy,
 	}
 	runningListOptions := metav1.ListOptions{
 		LabelSelector: "type=importer",
-		FieldSelector: "status.phase==Completed,status.phase==Error,status.phase==OOMKilled",
+		FieldSelector: selector,
 	}
 
 	// Delete just the dead importers
