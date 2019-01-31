@@ -88,6 +88,7 @@ func Init(token string, memory string) http.Handler {
 	}
 	listOptions := metav1.ListOptions{
 		LabelSelector: "type=importer",
+		FieldSelector: "status.phase==Completed,status.phase==Error,status.phase==OOMKilled",
 	}
 
 	tasks, err := clientset.Core().Pods(metav1.NamespaceDefault).List(listOptions)
@@ -95,6 +96,16 @@ func Init(token string, memory string) http.Handler {
 		panic(err.Error())
 	}
 	fmt.Printf("There are %d tasks in the cluster\n", len(tasks.Items))
+
+	ticker := time.NewTicker(10 * time.Second)
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				PurgeDead(*clientset)
+			}
+		}
+	}()
 
 	router.POST("/run", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		response, err := HandlePostAuth(w, r)
@@ -152,24 +163,5 @@ func Init(token string, memory string) http.Handler {
 	// 	Status(w, r, p, response, *clientset)
 	// })
 
-	go clearUsed(*clientset)
-
 	return router
-}
-
-func clearUsed(clientset kubernetes.Clientset) {
-	fmt.Printf("starting clearUsed routine")
-	ticker := time.NewTicker(5 * time.Minute)
-	quit := make(chan struct{})
-	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				PurgeDead(clientset)
-			case <-quit:
-				ticker.Stop()
-				return
-			}
-		}
-	}()
 }
