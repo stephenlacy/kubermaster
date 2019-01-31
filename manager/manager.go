@@ -6,6 +6,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"time"
 	// _ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	"k8s.io/client-go/rest"
 	// "k8s.io/client-go/tools/clientcmd"
@@ -151,5 +152,23 @@ func Init(token string, memory string) http.Handler {
 	// 	Status(w, r, p, response, *clientset)
 	// })
 
+	go clearUsed(*clientset)
+
 	return router
+}
+
+func clearUsed(clientset kubernetes.Clientset) {
+	ticker := time.NewTicker(5 * time.Minute)
+	quit := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				PurgeDead(clientset)
+			case <-quit:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
 }

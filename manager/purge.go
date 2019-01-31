@@ -33,3 +33,23 @@ func Purge(w http.ResponseWriter, r *http.Request, p httprouter.Params, response
 	_ = json.NewEncoder(w).Encode(payload)
 	return
 }
+
+// PurgeDead purges dead tasks
+func PurgeDead(clientset kubernetes.Clientset) {
+	propagationPolicy := metav1.DeletePropagationBackground
+
+	deleteOptions := &metav1.DeleteOptions{
+		PropagationPolicy: &propagationPolicy,
+	}
+	runningListOptions := metav1.ListOptions{
+		LabelSelector: "type=importer",
+		FieldSelector: "status.phase==Completed,status.phase==Error,status.phase==OOMKilled",
+	}
+
+	// Delete just the dead importers
+	err := clientset.Core().Pods(metav1.NamespaceDefault).DeleteCollection(deleteOptions, runningListOptions)
+	if err != nil {
+		fmt.Printf("%e", err)
+	}
+	return
+}
