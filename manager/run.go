@@ -73,7 +73,9 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 			Labels: map[string]string{
 				"type":       "importer",
 				"task":       response.Name,
-				"importerId": response.ImporterId,
+				"importerId": response.ImporterID,
+				"jobId":      response.JobID,
+				"sourceId":   response.SourceID,
 			},
 		},
 		Spec: api.PodSpec{

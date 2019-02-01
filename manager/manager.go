@@ -32,7 +32,8 @@ type PostRequest struct {
 	Id         string            `json:"id"`
 	Memory     string            `json:"memory"` // 250M
 	JobID      string            `json:"jobId"`
-	ImporterId string            `json:"importerId"`
+	ImporterID string            `json:"importerId"`
+	SourceID   string            `json:"sourceId"`
 	PreStop    string            `json:"preStop"`
 }
 
@@ -40,8 +41,13 @@ type PostRequest struct {
 type PostSuccessResponse struct {
 	Success    bool   `json:"success"`
 	Id         string `json:"id"`
-	ImporterId string `json:"importerId"`
+	ImporterID string `json:"importerId"`
 	Status     string `json:"status"`
+}
+
+// JobStatus is the JSON status sent back to the api
+type JobStatus struct {
+	Status string `json:"status"`
 }
 
 // PostErrorResponse is the JSON error response payload
@@ -96,6 +102,7 @@ func Init(token string, memory string) http.Handler {
 	}
 	fmt.Printf("There are %d tasks in the cluster\n", len(tasks.Items))
 
+	// Every 5 minutes do a cleanup of all old Pods. This increases performance on all 1.11* kubernetes versions
 	ticker := time.NewTicker(5 * time.Minute)
 	go func() {
 		for {

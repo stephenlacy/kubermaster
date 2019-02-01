@@ -1,12 +1,14 @@
 package manager
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"net/http"
+	"strings"
 )
 
 // Purge (delete) a task
@@ -42,15 +44,75 @@ func PurgeSelector(clientset kubernetes.Clientset, selector string) {
 	deleteOptions := &metav1.DeleteOptions{
 		PropagationPolicy: &propagationPolicy,
 	}
-	runningListOptions := metav1.ListOptions{
+	listOptions := metav1.ListOptions{
 		LabelSelector: "type=importer",
 		FieldSelector: selector,
 	}
 
+	tasks, err := clientset.Core().Pods(metav1.NamespaceDefault).List(listOptions)
+	if err != nil {
+		fmt.Printf("%e", err)
+	}
+
+	for _, task := range tasks.Items {
+		secretKey := ""
+		for _, v := range task.Spec.Containers[0].Args {
+			if strings.Contains(v, "--secret-key") {
+				secretKey = strings.Replace(v, "--secret-key=", "", 1)
+			}
+		}
+		if secretKey == "" {
+			break
+		}
+		// Generate the full url
+		url := fmt.Sprintf(
+			"/v1/sources/%s/importers/%s/jobs/%s?secretKey=%s",
+			task.Labels["sourceId"],
+			task.Labels["importerId"],
+			task.Labels["jobId"],
+			secretKey,
+		)
+		// Send request back to api te alert not running status
+
+		status := "failed"
+		if task.Status.Phase == "Succeeded" {
+			status = "completed"
+		}
+
+		stat := JobStatus{
+			Status: status,
+		}
+
+		makeRequest(url, stat)
+	}
+	fmt.Printf("deleting dead tasks%s\n", tasks)
+
 	// Delete just the dead importers
-	err := clientset.Core().Pods(metav1.NamespaceDefault).DeleteCollection(deleteOptions, runningListOptions)
+	err = clientset.Core().Pods(metav1.NamespaceDefault).DeleteCollection(deleteOptions, listOptions)
 	if err != nil {
 		fmt.Printf("%e", err)
 	}
 	return
+}
+
+func makeRequest(url string, stat JobStatus) {
+	fmt.Printf("updating: %s with data: %s\n", url, stat)
+	data, err := json.Marshal(&stat)
+	if err != nil {
+		return
+	}
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
+	if err != nil {
+		fmt.Printf("error creating request %s\n", err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("error connecting to api\n")
+		return
+	}
+	defer resp.Body.Close()
 }
