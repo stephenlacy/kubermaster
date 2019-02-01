@@ -58,20 +58,22 @@ func PurgeSelector(clientset kubernetes.Clientset, selector string) {
 
 	for _, task := range tasks.Items {
 		secretKey := ""
+		statusUrl := ""
 		for _, v := range task.Spec.Containers[0].Args {
 			if strings.Contains(v, "--secret-key") {
 				secretKey = strings.Replace(v, "--secret-key=", "", 1)
 			}
+			if strings.Contains(v, "--status-endpoint") {
+				statusUrl = strings.Replace(v, "--status-endpoint=", "", 1)
+			}
 		}
-		if secretKey == "" {
+		if secretKey == "" || statusUrl == "" {
 			break
 		}
 		// Generate the full url
 		url := fmt.Sprintf(
-			"/v1/sources/%s/importers/%s/jobs/%s?secretKey=%s",
-			task.Labels["sourceId"],
-			task.Labels["importerId"],
-			task.Labels["jobId"],
+			"%s?secretKey=%s",
+			statusUrl,
 			secretKey,
 		)
 		// Send request back to api te alert not running status
