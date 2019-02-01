@@ -54,6 +54,8 @@ func PurgeSelector(clientset kubernetes.Clientset, selector string) {
 		fmt.Printf("%e", err)
 	}
 
+	fmt.Printf("updating state and deleting dead tasks%s\n", tasks)
+
 	for _, task := range tasks.Items {
 		secretKey := ""
 		for _, v := range task.Spec.Containers[0].Args {
@@ -84,13 +86,10 @@ func PurgeSelector(clientset kubernetes.Clientset, selector string) {
 		}
 
 		makeRequest(url, stat)
-	}
-	fmt.Printf("deleting dead tasks%s\n", tasks)
-
-	// Delete just the dead importers
-	err = clientset.Core().Pods(metav1.NamespaceDefault).DeleteCollection(deleteOptions, listOptions)
-	if err != nil {
-		fmt.Printf("%e", err)
+		err = clientset.Core().Pods(metav1.NamespaceDefault).Delete(task.Name, deleteOptions)
+		if err != nil {
+			fmt.Printf("%e", err)
+		}
 	}
 	return
 }
