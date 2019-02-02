@@ -6,7 +6,7 @@ import (
 	api "k8s.io/api/core/v1"
 	"net/http"
 	"strings"
-	"time"
+	// "time"
 	// "k8s.io/client-go/rest"
 	"fmt"
 	"github.com/satori/go.uuid"
@@ -17,7 +17,7 @@ import (
 
 // Run a pod
 func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response PostRequest, clientset kubernetes.Clientset) {
-	start := time.Now()
+	// start := time.Now()
 	if response.Command == "" {
 		payload := PostErrorResponse{Success: false, Error: "command missing or invalid"}
 		_ = json.NewEncoder(w).Encode(payload)
@@ -130,7 +130,7 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 	payload := &PostSuccessResponse{Success: true, Id: name}
 	_ = json.NewEncoder(w).Encode(payload)
 
-	elapsed := time.Since(start)
-	fmt.Printf("starting task: %v, time: %s\n", name, elapsed)
+	// elapsed := time.Since(start)
+	// fmt.Printf("starting task: %v, time: %s\n", name, elapsed)
 	return
 }

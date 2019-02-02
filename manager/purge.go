@@ -38,7 +38,6 @@ func Purge(w http.ResponseWriter, r *http.Request, p httprouter.Params, response
 
 // PurgeSelector purges tasks by selector
 func PurgeSelector(clientset kubernetes.Clientset, selector string) {
-	fmt.Printf("purging dead tasks %s\n", selector)
 	propagationPolicy := metav1.DeletePropagationForeground
 
 	deleteOptions := &metav1.DeleteOptions{
@@ -54,26 +53,24 @@ func PurgeSelector(clientset kubernetes.Clientset, selector string) {
 		fmt.Printf("%e", err)
 	}
 
-	fmt.Printf("updating state and deleting dead tasks%s\n", tasks)
-
 	for _, task := range tasks.Items {
 		secretKey := ""
-		statusUrl := ""
+		statusURL := ""
 		for _, v := range task.Spec.Containers[0].Args {
 			if strings.Contains(v, "--secret-key") {
 				secretKey = strings.Replace(v, "--secret-key=", "", 1)
 			}
 			if strings.Contains(v, "--status-endpoint") {
-				statusUrl = strings.Replace(v, "--status-endpoint=", "", 1)
+				statusURL = strings.Replace(v, "--status-endpoint=", "", 1)
 			}
 		}
-		if secretKey == "" || statusUrl == "" {
+		if secretKey == "" || statusURL == "" {
 			break
 		}
 		// Generate the full url
 		url := fmt.Sprintf(
 			"%s?secretKey=%s",
-			statusUrl,
+			statusURL,
 			secretKey,
 		)
 		// Send request back to api te alert not running status
@@ -97,7 +94,6 @@ func PurgeSelector(clientset kubernetes.Clientset, selector string) {
 }
 
 func makeRequest(url string, stat JobStatus) {
-	fmt.Printf("updating: %s with data: %s\n", url, stat)
 	data, err := json.Marshal(&stat)
 	if err != nil {
 		return
