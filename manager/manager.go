@@ -4,6 +4,7 @@ import (
 	// "flag"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
+	"github.com/newrelic/go-agent"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"time"
@@ -11,15 +12,24 @@ import (
 	"k8s.io/client-go/rest"
 	// "k8s.io/client-go/tools/clientcmd"
 	"net/http"
-	// "os"
+	"os"
 	// "path/filepath"
 )
 
 // DefaultMemory is the maximum memory assigned to a Pod
 var DefaultMemory = "250M"
 
+// AppName is the name for newrelic
+var AppName = fmt.Sprintf("kubermaster:%s", os.Getenv("ENV"))
+
 // RootToken is the token used for the cluster's authentication
 var RootToken string
+
+// NewRelicConfig config for newrelic
+var NewRelicConfig = newrelic.NewConfig(AppName, os.Getenv("NEWRELIC_KEY"))
+
+// NewRelicClient client for newrelic
+var NewRelicClient newrelic.Application
 
 // PostRequest is the request sent to the manager
 type PostRequest struct {
@@ -63,6 +73,12 @@ type PostErrorResponse struct {
 func Init(token string, memory string) http.Handler {
 	router := httprouter.New()
 	RootToken = token
+
+	var err error
+	NewRelicClient, err = newrelic.NewApplication(NewRelicConfig)
+	if err != nil {
+		panic(err)
+	}
 
 	if memory != "" {
 		DefaultMemory = memory
