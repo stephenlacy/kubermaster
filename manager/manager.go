@@ -124,7 +124,7 @@ func Init(token string, memory string) http.Handler {
 		for {
 			select {
 			case <-ticker.C:
-				PurgeSelector(*clientset, "status.phase=Failed")
+				// PurgeSelector(*clientset, "status.phase=Failed")
 				PurgeSelector(*clientset, "status.phase=Succeeded")
 			}
 		}
