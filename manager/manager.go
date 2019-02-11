@@ -7,7 +7,7 @@ import (
 	"github.com/newrelic/go-agent"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"time"
+	// "time"
 	// _ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	"k8s.io/client-go/rest"
 	// "k8s.io/client-go/tools/clientcmd"
@@ -119,16 +119,16 @@ func Init(token string, memory string) http.Handler {
 	fmt.Printf("There are %d tasks in the cluster\n", len(tasks.Items))
 
 	// Every 5 minutes do a cleanup of all old Pods. This increases performance on all 1.11* kubernetes versions
-	ticker := time.NewTicker(5 * time.Minute)
-	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				// PurgeSelector(*clientset, "status.phase=Failed")
-				PurgeSelector(*clientset, "status.phase=Succeeded")
-			}
-		}
-	}()
+	// ticker := time.NewTicker(5 * time.Minute)
+	// go func() {
+	// 	for {
+	// 		select {
+	// 		case <-ticker.C:
+	// 			PurgeSelector(*clientset, "status.phase=Failed")
+	// 			PurgeSelector(*clientset, "status.phase=Succeeded")
+	// 		}
+	// 	}
+	// }()
 
 	router.POST("/run", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		response, err := HandlePostAuth(w, r)
