@@ -35,7 +35,7 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 		id = uid.String()
 	}
 
-	response.Name = fmt.Sprintf("task-%v-%v", response.Name, id)
+	response.Name = fmt.Sprintf("task-%v-%v-%v", response.Name, id, api.NamespaceDefault)
 
 	if response.Memory == "" {
 		response.Memory = DefaultMemory
