@@ -43,7 +43,7 @@ type PostRequest struct {
 	Labels     map[string]string `json:"labels`
 	Name       string            `json:"name"`
 	Id         string            `json:"id"`
-	Memory     string            `json:"memory"` // 250M
+	Memory     string            `json:"memory"` // 1G
 	CPU        string            `json:"cpu"`
 	JobID      string            `json:"jobId"`
 	ImporterID string            `json:"importerId"`

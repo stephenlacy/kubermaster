@@ -20,7 +20,7 @@ func main() {
 
 	token := flag.String("token", "", tokenDescription)
 	port := flag.String("port", "", portDescription)
-	memory := flag.String("memory", "250M", memoryDescription)
+	memory := flag.String("memory", "", memoryDescription)
 
 	if *token == "" {
 		*token = os.Getenv("TOKEN")
