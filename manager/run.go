@@ -40,6 +40,9 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 	if response.Memory == "" {
 		response.Memory = DefaultMemory
 	}
+	if response.CPU == "" {
+		response.CPU = DefaultCPU
+	}
 
 	args := strings.Split(response.Command, " ")
 
@@ -93,6 +96,7 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 					Resources: api.ResourceRequirements{
 						Limits: api.ResourceList{
 							api.ResourceName(api.ResourceMemory): resource.MustParse(response.Memory),
+							api.ResourceName(api.ResourceCPU):    resource.MustParse(response.CPU),
 						},
 					},
 				},

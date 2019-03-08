@@ -17,7 +17,10 @@ import (
 )
 
 // DefaultMemory is the maximum memory assigned to a Pod
-var DefaultMemory = "250M"
+var DefaultMemory = "1G"
+
+// DefaultCPU is the cpu amount requested
+var DefaultCPU = "250m"
 
 // AppName is the name for newrelic
 var AppName = fmt.Sprintf("kubermaster:%s", os.Getenv("ENV"))
@@ -41,6 +44,7 @@ type PostRequest struct {
 	Name       string            `json:"name"`
 	Id         string            `json:"id"`
 	Memory     string            `json:"memory"` // 250M
+	CPU        string            `json:"cpu"`
 	JobID      string            `json:"jobId"`
 	ImporterID string            `json:"importerId"`
 	SourceID   string            `json:"sourceId"`
