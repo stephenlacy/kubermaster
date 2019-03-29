@@ -100,8 +100,6 @@ func makeRequest(url string, stat JobStatus) {
 	}
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
-	txn := NewRelicClient.StartTransaction("importer:api:update", nil, req)
-	defer txn.End()
 	if err != nil {
 		fmt.Printf("error creating request %s\n", err)
 		return
