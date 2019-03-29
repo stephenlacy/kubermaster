@@ -7,7 +7,7 @@ import (
 	"github.com/newrelic/go-agent"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	// "time"
+	"time"
 	// _ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	"k8s.io/client-go/rest"
 	// "k8s.io/client-go/tools/clientcmd"
@@ -19,8 +19,11 @@ import (
 // DefaultMemory is the maximum memory assigned to a Pod
 var DefaultMemory = "650m"
 
-// DefaultCPU is the cpu amount requested
-var DefaultCPU = "250m"
+// DefaultCPURequest is the cpu amount requested
+var DefaultCPURequest = "220m"
+
+// DefaultCPULimit is the maximum cpu amount
+var DefaultCPULimit = "440m"
 
 // AppName is the name for newrelic
 var AppName = fmt.Sprintf("kubermaster:%s", os.Getenv("ENV"))
@@ -44,7 +47,8 @@ type PostRequest struct {
 	Name       string            `json:"name"`
 	Id         string            `json:"id"`
 	Memory     string            `json:"memory"` // 1G
-	CPU        string            `json:"cpu"`
+	CPULimit   string            `json:"cpuLimit"`
+	CPURequest string            `json:"cpuRequest"`
 	JobID      string            `json:"jobId"`
 	ImporterID string            `json:"importerId"`
 	SourceID   string            `json:"sourceId"`
@@ -123,16 +127,16 @@ func Init(token string, memory string) http.Handler {
 	fmt.Printf("There are %d tasks in the cluster\n", len(tasks.Items))
 
 	// Every 5 minutes do a cleanup of all old Pods. This increases performance on all 1.11* kubernetes versions
-	// ticker := time.NewTicker(5 * time.Minute)
-	// go func() {
-	// 	for {
-	// 		select {
-	// 		case <-ticker.C:
-	// 			PurgeSelector(*clientset, "status.phase=Failed")
-	// 			PurgeSelector(*clientset, "status.phase=Succeeded")
-	// 		}
-	// 	}
-	// }()
+	ticker := time.NewTicker(5 * time.Minute)
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				PurgeSelector(*clientset, "status.phase=Failed")
+				PurgeSelector(*clientset, "status.phase=Succeeded")
+			}
+		}
+	}()
 
 	router.POST("/run", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		response, err := HandlePostAuth(w, r)

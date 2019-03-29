@@ -40,8 +40,11 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 	if response.Memory == "" {
 		response.Memory = DefaultMemory
 	}
-	if response.CPU == "" {
-		response.CPU = DefaultCPU
+	if response.CPULimit == "" {
+		response.CPULimit = DefaultCPULimit
+	}
+	if response.CPURequest == "" {
+		response.CPURequest = DefaultCPURequest
 	}
 
 	args := strings.Split(response.Command, " ")
@@ -94,9 +97,12 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 					Args:            args,
 					Lifecycle:       lifecycle,
 					Resources: api.ResourceRequirements{
+						Requests: api.ResourceList{
+							api.ResourceName(api.ResourceRequestsCPU): resource.MustParse(response.CPURequest),
+						},
 						Limits: api.ResourceList{
 							api.ResourceName(api.ResourceMemory): resource.MustParse(response.Memory),
-							api.ResourceName(api.ResourceCPU):    resource.MustParse(response.CPU),
+							api.ResourceName(api.ResourceCPU):    resource.MustParse(response.CPULimit),
 						},
 					},
 				},
