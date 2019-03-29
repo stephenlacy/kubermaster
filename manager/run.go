@@ -98,11 +98,11 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 					Lifecycle:       lifecycle,
 					Resources: api.ResourceRequirements{
 						Requests: api.ResourceList{
-							api.ResourceName(api.ResourceRequestsCPU): resource.MustParse(response.CPURequest),
+							api.ResourceCPU: resource.MustParse(response.CPURequest),
 						},
 						Limits: api.ResourceList{
-							api.ResourceName(api.ResourceMemory): resource.MustParse(response.Memory),
-							api.ResourceName(api.ResourceCPU):    resource.MustParse(response.CPULimit),
+							api.ResourceMemory: resource.MustParse(response.Memory),
+							api.ResourceCPU:    resource.MustParse(response.CPULimit),
 						},
 					},
 				},

@@ -20,10 +20,10 @@ import (
 var DefaultMemory = "650m"
 
 // DefaultCPURequest is the cpu amount requested
-var DefaultCPURequest = "220m"
+var DefaultCPURequest = "0.22"
 
 // DefaultCPULimit is the maximum cpu amount
-var DefaultCPULimit = "440m"
+var DefaultCPULimit = "0.44"
 
 // AppName is the name for newrelic
 var AppName = fmt.Sprintf("kubermaster:%s", os.Getenv("ENV"))
