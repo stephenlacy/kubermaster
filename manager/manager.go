@@ -15,7 +15,7 @@ import (
 )
 
 // DefaultMemory is the maximum memory assigned to a Pod
-var DefaultMemory = "650m"
+var DefaultMemory = "650Mi"
 
 // DefaultCPURequest is the cpu amount requested
 var DefaultCPURequest = "0.22"
