@@ -106,22 +106,6 @@
   version = "v1.1"
 
 [[projects]]
-  digest = "1:c6398a9996a9b0c716da9335cbaa193ed2c3c8fe24f1bf967b617b968d9bec26"
-  name = "github.com/newrelic/go-agent"
-  packages = [
-    ".",
-    "internal",
-    "internal/cat",
-    "internal/jsonx",
-    "internal/logger",
-    "internal/sysinfo",
-    "internal/utilization",
-  ]
-  pruneopts = "UT"
-  revision = "bf3521639bfd441ffe4480f8bdd27ac87d18362a"
-  version = "v2.4.0"
-
-[[projects]]
   branch = "master"
   digest = "1:3bf17a6e6eaa6ad24152148a631d18662f7212e21637c2699bff3369b7f00fa2"
   name = "github.com/petar/GoLLRB"
@@ -136,6 +120,14 @@
   pruneopts = "UT"
   revision = "5f041e8faa004a95c88a202771f4cc3e991971e6"
   version = "v2.0.1"
+
+[[projects]]
+  digest = "1:c5dfe46811af7e2eff7c11fc84b6c841520338613c056f659f262d5a4fb42fa8"
+  name = "github.com/rs/cors"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "db0fe48135e83b5812a5a31be0eea66984b1b521"
+  version = "v1.7.0"
 
 [[projects]]
   digest = "1:274f67cb6fed9588ea2521ecdac05a6d62a8c51c074c1fccc6a49a40ba80e925"
@@ -341,7 +333,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/julienschmidt/httprouter",
-    "github.com/newrelic/go-agent",
+    "github.com/rs/cors",
     "github.com/satori/go.uuid",
     "k8s.io/api/core/v1",
     "k8s.io/apimachinery/pkg/api/resource",

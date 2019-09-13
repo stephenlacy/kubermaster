@@ -3,9 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/stevelacy/kubermaster/manager"
 	"net/http"
 	"os"
+
+	"github.com/rs/cors"
+	"github.com/stevelacy/kubermaster/manager"
 )
 
 var version = "dev"
@@ -48,7 +50,16 @@ func main() {
 
 	fmt.Println("Listening on port:", *port, "With memory limit:", *memory)
 
-	err := http.ListenAndServe(fmt.Sprintf(":%v", *port), manager.Init(*token, *memory))
+	origin := os.Getenv("ORIGIN")
+	if origin == "" {
+		origin = "http://localhost:1234"
+	}
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{origin},
+	})
+	handler := c.Handler(manager.Init(*token, *memory))
+
+	err := http.ListenAndServe(fmt.Sprintf(":%v", *port), handler)
 	if err != nil {
 		panic(err)
 	}

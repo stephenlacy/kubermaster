@@ -35,10 +35,10 @@ spec:
     spec:
       containers:
       - name: kubermaster
-        image: "stevelacy/kubermaster:fc1d43c"
+        image: "stevelacy/kubermaster:246e702"
         env:
         - name: TOKEN
-          value: "<token here>"
+          value: "token"
         - name: BUILD_TAG
           value: "1"
         - name: ENV
