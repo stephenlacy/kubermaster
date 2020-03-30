@@ -1,67 +1,89 @@
-# kubermaster service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kubermaster
+  name: kubermaster-deployment
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kubermaster
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: kubermaster
+    spec:
+      serviceAccount: kubermaster
+      containers:
+      - env:
+        - name: TOKEN
+          value: "token here"
+        - name: ENV
+          value: staging
+        - name: NEWRELIC_KEY
+          value: ""
+        image: "stevelacy/kubermaster:ba53225"
+        imagePullPolicy: Always
+        name: kubermaster
+        ports:
+        - containerPort: 9090
+          protocol: TCP
+
+---
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: kubermaster-service
+  name: kubermaster
+  namespace: default
 spec:
-  type: NodePort
-  selector:
-    app: kubermaster
   ports:
-  - protocol: TCP
-    port: 9090
+  - port: 9090
+    protocol: TCP
     targetPort: 9090
-
----
-
-# kubermaster deployment
-
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: kubermaster-deployment
-  labels:
-    app: kubermaster
-spec:
-  replicas: 1
   selector:
-    matchLabels:
-      app: kubermaster
-  template:
-    metadata:
-      labels:
-        app: kubermaster
-    spec:
-      containers:
-      - name: kubermaster
-        image: "stevelacy/kubermaster:246e702"
-        env:
-        - name: TOKEN
-          value: "token"
-        - name: BUILD_TAG
-          value: "1"
-        - name: ENV
-          value: "staging"
-        ports:
-        - containerPort: 9090
-        imagePullPolicy: Always
+    app: kubermaster
+  type: LoadBalancer
 
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kubermaster
 
+---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
+kind: Role
 metadata:
   namespace: default
   name: kubermaster-role
 rules:
-- apiGroups: [""] # "" indicates the core API group
+- apiGroups: [""]
   resources: ["pods"]
-  verbs: ["get", "watch", "list", "create", "delete"]
-
+  verbs: ["get", "watch", "list", "create", "update", "patch", "delete"]
 ---
 
-# kubectl create clusterrolebinding kubermaster-role-binding \
-#  --clusterrole=kubermaster-role  \
-#  --serviceaccount=default:default
-
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: kubermaster-role-binding
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: kubermaster
+  apiGroup: ""
+  namespace: default
+roleRef:
+  kind: Role
+  name: kubermaster-role
+  apiGroup: ""
+---
