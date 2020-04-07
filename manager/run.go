@@ -2,14 +2,17 @@ package manager
 
 import (
 	"encoding/json"
-	"github.com/julienschmidt/httprouter"
-	api "k8s.io/api/core/v1"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/julienschmidt/httprouter"
+	api "k8s.io/api/core/v1"
+
 	// "k8s.io/client-go/rest"
 	"fmt"
-	"github.com/satori/go.uuid"
+
+	uuid "github.com/satori/go.uuid"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -32,10 +35,10 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 	id := ""
 	if response.Name == "" {
 		uid := uuid.NewV4()
-		id = uid.String()
+		id = "-" + uid.String()
 	}
 
-	response.Name = fmt.Sprintf("task-%v-%v-%v", response.Name, id, api.NamespaceDefault)
+	response.Name = fmt.Sprintf("task-%v%v", response.Name, id)
 
 	if response.Memory == "" {
 		response.Memory = DefaultMemory
