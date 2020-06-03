@@ -111,7 +111,7 @@ func Run(w http.ResponseWriter, r *http.Request, p httprouter.Params, response P
 	}
 
 	listOptions := metav1.ListOptions{
-		LabelSelector: fmt.Sprintf("task=%s", response.Name),
+		LabelSelector: fmt.Sprintf("importerId=%s", response.ImporterID),
 		// FieldSelector: "status.phase!=Running",
 	}
 
